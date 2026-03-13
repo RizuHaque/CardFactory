@@ -9,12 +9,20 @@ public class ConveyorBelt : MonoBehaviour
     public float speed = 2f;
 
     public Action<Transform> onItemDelivered;
+    public Action<Transform> onItemMoved;
 
     private Dictionary<Transform, float> items = new Dictionary<Transform, float>();
+    private Quaternion beltRotation;
+
+    void Start()
+    {
+        beltRotation = Quaternion.LookRotation(endPoint.position - startPoint.position);
+    }
 
     public void AddItem(Transform item)
     {
         item.position = startPoint.position;
+        item.rotation = beltRotation;
         items[item] = 0f;
     }
 
@@ -22,13 +30,20 @@ public class ConveyorBelt : MonoBehaviour
 
     void Update()
     {
-        float step = (speed / Vector3.Distance(startPoint.position, endPoint.position)) * Time.deltaTime;
+        float step = speed / Vector3.Distance(startPoint.position, endPoint.position) * Time.deltaTime;
         List<Transform> done = new List<Transform>();
 
         foreach (var key in new List<Transform>(items.Keys))
         {
+            if (!items.ContainsKey(key)) continue;
+
             items[key] = Mathf.Min(items[key] + step, 1f);
             key.position = Vector3.Lerp(startPoint.position, endPoint.position, items[key]);
+
+            onItemMoved?.Invoke(key);
+
+            if (!items.ContainsKey(key)) continue;
+
             if (items[key] >= 1f) done.Add(key);
         }
 
