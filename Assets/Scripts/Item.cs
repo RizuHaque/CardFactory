@@ -11,7 +11,7 @@ public class Item : MonoBehaviour
     public void Initialize(ItemStack itemStack, ConveyorBelt conveyorBelt, StackHolder stackHolder, ColorType type)
     {
         colorType = type;
-        transform.GetChild(0).GetComponent<MeshRenderer>().material.color = type.ToColor();
+        transform.GetChild(0).GetComponent<MeshRenderer>().material.color = ColorManager.Get(type);
         SetClickAction(() => itemStack.Dispatch(conveyorBelt, stackHolder.OnStackDispatched));
     }
 

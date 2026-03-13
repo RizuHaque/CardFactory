@@ -4,14 +4,17 @@ using UnityEngine;
 public class ContainerHolder : MonoBehaviour
 {
     public ConveyorBelt belt;
+    public Transform spawnPoint;
     public List<Container> containers = new List<Container>();
     public float containerSpacing = 1.5f;
+
+    Vector3 Origin => spawnPoint != null ? spawnPoint.position : transform.position;
 
     void Start()
     {
         for (int i = 0; i < containers.Count; i++)
         {
-            containers[i].Build(transform.position + Vector3.forward * i * containerSpacing);
+            containers[i].Build(ContainerPosition(i));
             containers[i].onFull += OnContainerFull;
         }
 
@@ -19,6 +22,8 @@ public class ContainerHolder : MonoBehaviour
     }
 
     void OnDestroy() => belt.onItemMoved -= OnItemMoved;
+
+    Vector3 ContainerPosition(int index) => Origin + Vector3.forward * index * containerSpacing;
 
     void OnItemMoved(Transform item)
     {
@@ -41,5 +46,10 @@ public class ContainerHolder : MonoBehaviour
         }
     }
 
-    void OnContainerFull(Container container) => containers.Remove(container);
+    void OnContainerFull(Container container)
+    {
+        containers.Remove(container);
+        for (int i = 0; i < containers.Count; i++)
+            containers[i].Reposition(ContainerPosition(i));
+    }
 }

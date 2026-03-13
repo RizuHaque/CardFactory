@@ -49,9 +49,8 @@ public class ItemStack
             Item item = items[i];
             float delay = i * dispatchInterval;
 
-            item.transform
-                .DOJump(belt.startPoint.position, jumpPower, 1, jumpDuration)
-                .SetDelay(delay);
+            item.transform.DOJump(belt.startPoint.position, jumpPower, 1, jumpDuration).SetDelay(delay);
+            item.transform.DORotateQuaternion(belt.BeltRotation, jumpDuration).SetDelay(delay);
 
             DOVirtual.DelayedCall(delay + jumpDuration, () =>
             {

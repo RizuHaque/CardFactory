@@ -32,6 +32,7 @@ public class OverfillStack
         Vector3 pos = basePosition + Vector3.right * items.Count * stride;
         item.transform.DOKill();
         item.transform.DOJump(pos, jumpPower, 1, jumpDuration);
+        item.transform.DORotateQuaternion(Quaternion.identity, jumpDuration);
         items.Add(item);
         item.SetClickAction(Dispatch);
     }
@@ -52,9 +53,8 @@ public class OverfillStack
             Item item = items[i];
             float delay = i * dispatchInterval;
 
-            item.transform
-                .DOJump(belt.startPoint.position, jumpPower, 1, jumpDuration)
-                .SetDelay(delay);
+            item.transform.DOJump(belt.startPoint.position, jumpPower, 1, jumpDuration).SetDelay(delay);
+            item.transform.DORotateQuaternion(belt.BeltRotation, jumpDuration).SetDelay(delay);
 
             DOVirtual.DelayedCall(delay + jumpDuration, () =>
             {

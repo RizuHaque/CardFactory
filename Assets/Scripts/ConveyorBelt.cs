@@ -11,18 +11,19 @@ public class ConveyorBelt : MonoBehaviour
     public Action<Transform> onItemDelivered;
     public Action<Transform> onItemMoved;
 
+    public Quaternion BeltRotation { get; private set; }
+
     private Dictionary<Transform, float> items = new Dictionary<Transform, float>();
-    private Quaternion beltRotation;
 
     void Start()
     {
-        beltRotation = Quaternion.LookRotation(endPoint.position - startPoint.position);
+        BeltRotation = Quaternion.LookRotation(endPoint.position - startPoint.position);
     }
 
     public void AddItem(Transform item)
     {
         item.position = startPoint.position;
-        item.rotation = beltRotation;
+        item.rotation = BeltRotation;
         items[item] = 0f;
 
         var i = item.GetComponent<Item>();
