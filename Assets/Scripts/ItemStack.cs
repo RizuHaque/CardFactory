@@ -17,6 +17,8 @@ public class ItemStack
     private const float jumpDuration = 0.4f;
     private const float dispatchInterval = 0.15f;
 
+    private static readonly Quaternion stackRestRotation = Quaternion.Euler(-70f, 0f, 0f);
+
     private List<Item> items = new List<Item>();
     private bool dispatched = false;
 
@@ -27,7 +29,7 @@ public class ItemStack
         for (int i = 0; i < count; i++)
         {
             Vector3 pos = basePosition + Vector3.forward * i * stride;
-            Item item = GameObject.Instantiate(itemPrefab, pos, Quaternion.identity);
+            Item item = GameObject.Instantiate(itemPrefab, pos, stackRestRotation);
             item.Initialize(this, belt, holder, colorType);
             items.Add(item);
         }

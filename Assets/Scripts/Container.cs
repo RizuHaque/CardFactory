@@ -18,7 +18,6 @@ public class Container
     private Vector3 position;
     private int absorbed = 0;
     private GameObject visual;
-    private List<GameObject> absorbedItems = new List<GameObject>();
 
     public bool IsFull => absorbed >= size;
     public float XPosition => position.x;
@@ -47,18 +46,31 @@ public class Container
     {
         Vector3 target = position + Vector3.forward * absorbed * itemStride;
         absorbed++;
-        absorbedItems.Add(item.gameObject);
         item.DOKill();
         item.transform.DOJump(target, 1f, 1, jumpDuration)
-            .OnComplete(() => { if (IsFull) Destroy(); });
+            .OnComplete(() =>
+            {
+                item.transform.SetParent(visual.transform);
+                if (IsFull) PlayFullAnimation();
+            });
         item.transform.DORotateQuaternion(Quaternion.identity, jumpDuration);
+    }
+
+    private void PlayFullAnimation()
+    {
+        DOVirtual.DelayedCall(0.2f, () =>
+        {
+            Sequence seq = DOTween.Sequence();
+
+            seq.Append(visual.transform.DOMove(visual.transform.position + Vector3.up * 0.8f, 0.4f).SetEase(Ease.OutQuad));
+            seq.Join(visual.transform.DOScale(new Vector3(1f, 1.3f, 1f), 0.4f).SetEase(Ease.OutQuad));
+            seq.Append(visual.transform.DOScale(Vector3.zero, 0.25f).SetEase(Ease.InBack));
+            seq.OnComplete(Destroy);
+        });
     }
 
     private void Destroy()
     {
-        foreach (var item in absorbedItems)
-            GameObject.Destroy(item);
-        absorbedItems.Clear();
         GameObject.Destroy(visual);
         onFull?.Invoke(this);
     }

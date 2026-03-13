@@ -11,6 +11,8 @@ public class OverfillStack
     private const float jumpDuration = 0.3f;
     private const float dispatchInterval = 0.1f;
 
+    private static readonly Quaternion overfillRotation = Quaternion.LookRotation(Vector3.right);
+
     private List<Item> items = new List<Item>();
     private Vector3 basePosition;
     private ConveyorBelt belt;
@@ -32,7 +34,7 @@ public class OverfillStack
         Vector3 pos = basePosition + Vector3.right * items.Count * stride;
         item.transform.DOKill();
         item.transform.DOJump(pos, jumpPower, 1, jumpDuration);
-        item.transform.DORotateQuaternion(Quaternion.identity, jumpDuration);
+        item.transform.DORotateQuaternion(overfillRotation, jumpDuration);
         items.Add(item);
         item.SetClickAction(Dispatch);
     }
