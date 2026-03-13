@@ -24,9 +24,17 @@ public class ConveyorBelt : MonoBehaviour
         item.position = startPoint.position;
         item.rotation = beltRotation;
         items[item] = 0f;
+
+        var i = item.GetComponent<Item>();
+        if (i != null) i.isOnBelt = true;
     }
 
-    public void RemoveItem(Transform item) => items.Remove(item);
+    public void RemoveItem(Transform item)
+    {
+        items.Remove(item);
+        var i = item.GetComponent<Item>();
+        if (i != null) i.isOnBelt = false;
+    }
 
     void Update()
     {
@@ -43,13 +51,14 @@ public class ConveyorBelt : MonoBehaviour
             onItemMoved?.Invoke(key);
 
             if (!items.ContainsKey(key)) continue;
-
             if (items[key] >= 1f) done.Add(key);
         }
 
         foreach (var item in done)
         {
             items.Remove(item);
+            var i = item.GetComponent<Item>();
+            if (i != null) i.isOnBelt = false;
             onItemDelivered?.Invoke(item);
         }
     }

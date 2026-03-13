@@ -4,6 +4,7 @@ using UnityEngine;
 public class StackHolder : MonoBehaviour
 {
     public ConveyorBelt belt;
+    public Transform spawnPoint;
     public List<ItemStack> stacks = new List<ItemStack>();
     public float gapBetweenStacks = 0.2f;
 
@@ -15,12 +16,14 @@ public class StackHolder : MonoBehaviour
             stacks[i].Build(StackPosition(i), belt, this);
     }
 
+    Vector3 Origin => spawnPoint != null ? spawnPoint.position : transform.position;
+
     Vector3 StackPosition(int index)
     {
         float z = 0f;
         for (int i = 0; i < index; i++)
             z += stacks[i].TotalDepth + gapBetweenStacks;
-        return transform.position + Vector3.forward * z;
+        return Origin + Vector3.forward * z;
     }
 
     public void OnStackDispatched()

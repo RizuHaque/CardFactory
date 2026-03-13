@@ -1,21 +1,21 @@
+using System;
 using UnityEngine;
 
 public class Item : MonoBehaviour
 {
     public ColorType colorType { get; private set; }
+    public bool isOnBelt { get; set; }
 
-    private ItemStack stack;
-    private ConveyorBelt belt;
-    private StackHolder holder;
+    private Action onClicked;
 
     public void Initialize(ItemStack itemStack, ConveyorBelt conveyorBelt, StackHolder stackHolder, ColorType type)
     {
-        stack = itemStack;
-        belt = conveyorBelt;
-        holder = stackHolder;
         colorType = type;
         transform.GetChild(0).GetComponent<MeshRenderer>().material.color = type.ToColor();
+        SetClickAction(() => itemStack.Dispatch(conveyorBelt, stackHolder.OnStackDispatched));
     }
 
-    void OnMouseDown() => stack.Dispatch(belt, holder.OnStackDispatched);
+    public void SetClickAction(Action action) => onClicked = action;
+
+    void OnMouseDown() => onClicked?.Invoke();
 }

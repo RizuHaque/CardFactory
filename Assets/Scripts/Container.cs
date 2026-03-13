@@ -12,6 +12,8 @@ public class Container
 
     public Action<Container> onFull;
 
+    private const float itemStride = 0.15f;
+
     private Vector3 position;
     private int absorbed = 0;
     private GameObject visual;
@@ -31,15 +33,16 @@ public class Container
     public bool MatchesColor(Transform item)
     {
         var itemComp = item.GetComponent<Item>();
-        return itemComp != null && itemComp.colorType == colorType;
+        return itemComp != null && itemComp.isOnBelt && itemComp.colorType == colorType;
     }
 
     public void Absorb(Transform item)
     {
+        Vector3 target = position + Vector3.up * absorbed * itemStride;
         absorbed++;
         absorbedItems.Add(item.gameObject);
         item.DOKill();
-        item.DOJump(position + Vector3.up * absorbed * 0.15f, 1f, 1, 0.35f)
+        item.DOJump(target, 1f, 1, 0.35f)
             .OnComplete(() => { if (IsFull) Destroy(); });
     }
 
